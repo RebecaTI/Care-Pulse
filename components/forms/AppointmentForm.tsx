@@ -1,5 +1,4 @@
 "use client"
-
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -15,13 +14,16 @@ import { Doctors } from "@/constants"
 import { SelectItem } from "../ui/select"
 import Image from "next/image"
 import { createAppointment } from "@/lib/actions/appointment.actions"
+import { Appointment } from "@/types/appwrite.types"
 
 const AppointmentForm = ({
-  userId, patientId, type
+  userId, patientId, type, appointment, setOpen
 }): {
   userId: string;
   patientId: string;
   type: "create" | "cancel" | "schedule";
+  appointment?: Appointment;
+  setOpen: (open: bollean) => void;
 } => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false)
@@ -55,13 +57,8 @@ const AppointmentForm = ({
         break;
     }
 
-    console.log('BEFORE THE TYPE', type)
-
     try {
       if (type === 'create' && patientId) {
-
-        console.log('Im here')
-
         const appointmentData = {
           userId,
           patient: patientId,
@@ -74,12 +71,26 @@ const AppointmentForm = ({
 
         const appointment = await createAppointment(appointmentData);
 
-        console.log(appointment)
+        console.log(appointment);
 
         if (appointment) {
           form.reset();
           router.push(`/patients/${userId}/new-appointment/success?appointmentId=${appointment.$id}`)
         }
+      } else {
+        const appointmentToUpdate = {
+          userId,
+          appointmentId: appointment?.$id,
+          appointment: {
+            primaryPsysician: values?.primaryPhysician,
+            schedule: new Date(values?.schedule),
+            status: status as Status,
+            cancellationReason: values?.cancellationReason,
+          },
+          type
+        }
+
+        const updatedAppointment = await updateAppointment(appointmentToUpdate);
       }
 
     } catch (error) {

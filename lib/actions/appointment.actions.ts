@@ -72,3 +72,11 @@ export const getRecentAppointmentsList = async () => {
     console.log(error)
   }
 }
+
+export const updateAppointment = async ({ appointmentId, userId, appointment, type }: AppointmentParams) => {
+  try {
+
+  } catch (error){
+    console.log(error);
+  }
+}
