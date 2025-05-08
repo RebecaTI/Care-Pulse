@@ -13,7 +13,7 @@ import { FormFieldType } from "./PatientForm"
 import { Doctors } from "@/constants"
 import { SelectItem } from "../ui/select"
 import Image from "next/image"
-import { createAppointment } from "@/lib/actions/appointment.actions"
+import { createAppointment, updateAppointment } from "@/lib/actions/appointment.actions"
 import { Appointment } from "@/types/appwrite.types"
 
 const AppointmentForm = ({
@@ -80,7 +80,7 @@ const AppointmentForm = ({
       } else {
         const appointmentToUpdate = {
           userId,
-          appointmentId: appointment?.$id,
+          appointmentId: appointment?.$id!,
           appointment: {
             primaryPsysician: values?.primaryPhysician,
             schedule: new Date(values?.schedule),
@@ -91,6 +91,11 @@ const AppointmentForm = ({
         }
 
         const updatedAppointment = await updateAppointment(appointmentToUpdate);
+
+        if (updatedAppointment) {
+          setOpen && setOpen(false);
+          form.reset();
+        }
       }
 
     } catch (error) {
@@ -117,7 +122,6 @@ const AppointmentForm = ({
 
   return (
     <Form {...form}>
-
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 flex-1">
         <section className="mb-12 space-y-4">
           <h1 className="header">New appointment</h1>
