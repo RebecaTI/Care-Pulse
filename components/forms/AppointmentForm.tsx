@@ -29,16 +29,11 @@ const AppointmentForm = ({
   const [isLoading, setIsLoading] = useState(false)
 
   const AppointmentFormValidation = getAppointmentSchema(type);
-
-  console.log(appointment);
-  console.log(appointment.primaryPhisician);
   // console.log(`apointment=${JSON.stringify(appointment)}`);
-  console.log(appointment.schedule);
-  console.log(appointment.reason);
   const form = useForm<z.infer<typeof AppointmentFormValidation>>({
     resolver: zodResolver(AppointmentFormValidation),
     defaultValues: {
-      primaryPhysician: appointment ? appointment.primaryPhisician : '',
+      primaryPhysician: appointment ? appointment.primaryPhysician : '',
       schedule: appointment ? new Date(appointment.schedule) : new Date(),
       reason: appointment ? appointment.reason : '',
       note: appointment ? appointment.note : '',
@@ -47,6 +42,8 @@ const AppointmentForm = ({
   })
 
   async function onSubmit(values: z.infer<typeof AppointmentFormValidation>) {
+    console.log('Im submiting', { type });
+
     setIsLoading(true)
 
     let status;
@@ -61,7 +58,7 @@ const AppointmentForm = ({
         status = 'pending';
         break;
     }
-
+    console.log({ type })
     try {
       if (type === 'create' && patientId) {
         const appointmentData = {
@@ -83,6 +80,7 @@ const AppointmentForm = ({
           router.push(`/patients/${userId}/new-appointment/success?appointmentId=${appointment.$id}`)
         }
       } else {
+        console.log('Updating appointment');
         const appointmentToUpdate = {
           userId,
           appointmentId: appointment?.$id!,
@@ -102,7 +100,6 @@ const AppointmentForm = ({
           form.reset();
         }
       }
-
     } catch (error) {
       console.log(error)
     }
