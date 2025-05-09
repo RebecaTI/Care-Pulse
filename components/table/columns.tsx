@@ -64,7 +64,8 @@ export const columns: ColumnDef<Payment>[] = [
 
       return (
         <div className="flex items-center gap-3">
-          <Image src={doctor?.image}
+          <Image
+            src={doctor?.image}
             alt={doctor.name}
             width={100}
             height={100}
@@ -87,13 +88,13 @@ export const columns: ColumnDef<Payment>[] = [
             type="schedule"
             patientId={data.patient.$id}
             userId={data.userId}
-            appointmentId={data}
+            appointment={data}
           />
           <AppointmentModal
             type="cancel"
             patientId={data.patient.$id}
             userId={data.userId}
-            appointmentId={data}
+            appointment={data}
           />
 
         </div>

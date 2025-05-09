@@ -23,21 +23,26 @@ const AppointmentForm = ({
   patientId: string;
   type: "create" | "cancel" | "schedule";
   appointment?: Appointment;
-  setOpen: (open: bollean) => void;
+  setOpen: (open: boolean) => void;
 } => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false)
 
   const AppointmentFormValidation = getAppointmentSchema(type);
 
+  console.log(appointment);
+  console.log(appointment.primaryPhisician);
+  // console.log(`apointment=${JSON.stringify(appointment)}`);
+  console.log(appointment.schedule);
+  console.log(appointment.reason);
   const form = useForm<z.infer<typeof AppointmentFormValidation>>({
     resolver: zodResolver(AppointmentFormValidation),
     defaultValues: {
-      primaryPhysician: "",
-      schedule: new Date(),
-      reason: "",
-      note: "",
-      cancellationReason: "",
+      primaryPhysician: appointment ? appointment.primaryPhisician : '',
+      schedule: appointment ? new Date(appointment.schedule) : new Date(),
+      reason: appointment ? appointment.reason : '',
+      note: appointment ? appointment.note : '',
+      cancellationReason: appointment ? appointment.cancellationReason : '',
     },
   })
 
@@ -123,10 +128,10 @@ const AppointmentForm = ({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 flex-1">
-        <section className="mb-12 space-y-4">
+        {type === 'create' && <section className="mb-12 space-y-4">
           <h1 className="header">New appointment</h1>
           <p className="text-dark-700">Request a new appointment in 10 seconds</p>
-        </section>
+        </section>}
 
         {type !== "cancel" && (
           <>
