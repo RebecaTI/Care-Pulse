@@ -92,6 +92,6 @@ export const updateAppointment = async ({ appointmentId, userId, appointment, ty
      revalidatePath('/admin')
      return parseStringify(updatedAppointment)
   } catch (error) {
-    console.log(error);
+    console.log(error.response);
   }
 }

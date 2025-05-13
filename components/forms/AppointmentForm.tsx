@@ -80,15 +80,18 @@ const AppointmentForm = ({
           router.push(`/patients/${userId}/new-appointment/success?appointmentId=${appointment.$id}`)
         }
       } else {
-        console.log('Updating appointment');
+        if (!appointment.$id) {
+          throw new Error('appointment not found')
+        }
+        console.log('Updating appointment', values.primaryPhysician);
         const appointmentToUpdate = {
           userId,
-          appointmentId: appointment?.$id!,
+          appointmentId: appointment.$id,
           appointment: {
-            primaryPsysician: values?.primaryPhysician,
+            primaryPhysician: values.primaryPhysician,
             schedule: new Date(values?.schedule),
             status: status as Status,
-            cancellationReason: values?.cancellationReason,
+            cancelationReason: values?.cancellationReason,
           },
           type
         }
