@@ -6,15 +6,14 @@ import { Form } from "@/components/ui/form"
 import CustomFormField from "../CustomFormField"
 import SubmitButton from "../SubmitButton"
 import { useState } from "react"
-// import { AppointmentFormValidation, getAppointmentSchema } from "@/lib/validation"
 import { useRouter } from "next/navigation"
-// import { createUser } from "@/lib/actions/patient.actions"
 import { FormFieldType } from "./PatientForm"
 import { Doctors } from "@/constants"
 import { SelectItem } from "../ui/select"
 import Image from "next/image"
 import { createAppointment, updateAppointment } from "@/lib/actions/appointment.actions"
 import { Appointment } from "@/types/appwrite.types"
+import { getAppointmentSchema } from "@/lib/validation"
 
 const AppointmentForm = ({
   userId, patientId, type, appointment, setOpen
