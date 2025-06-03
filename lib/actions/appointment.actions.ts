@@ -1,11 +1,18 @@
 'use server'
 
-import { ID, Query } from "node-appwrite";
-import { APPOINTMENT_COLLECTION_ID, DATABASE_ID, databases } from "../appwrite.config";
-import { parseStringify } from "../utils";
-import { Appointment } from "@/types/appwrite.types";
+import { ID, Query } from 'node-appwrite'
+import {
+  APPOINTMENT_COLLECTION_ID,
+  DATABASE_ID,
+  databases
+} from '../appwrite.config'
+import { parseStringify } from '../utils'
+import { Appointment } from '@/types/appwrite.types'
+import { revalidatePath } from 'next/cache'
 
-export const createAppointment = async (appointment : CreateAppointmentParams) => {
+export const createAppointment = async (
+  appointment: CreateAppointmentParams
+) => {
   try {
     const newAppointment = await databases.createDocument(
       DATABASE_ID!,
@@ -14,7 +21,7 @@ export const createAppointment = async (appointment : CreateAppointmentParams) =
       appointment
     )
 
-    return parseStringify(newAppointment);
+    return parseStringify(newAppointment)
   } catch (error) {
     console.log(error)
   }
@@ -28,7 +35,7 @@ export const getAppointment = async (appointmentId: string) => {
       appointmentId
     )
 
-    return parseStringify(appointment);
+    return parseStringify(appointment)
   } catch (error) {
     console.log(error)
   }
@@ -40,25 +47,28 @@ export const getRecentAppointmentsList = async () => {
       DATABASE_ID!,
       APPOINTMENT_COLLECTION_ID!,
       [Query.orderDesc('$createdAt')]
-    ) 
+    )
 
     const initialCounts = {
       scheduledCount: 0,
       pendingCount: 0,
-      cancelledCount: 0,
+      cancelledCount: 0
     }
 
-    const counts = (appointments.documents as Appointment[]).reduce((acc, appointments) => {
-      if (appointments.status === 'scheduled') {
-        acc.scheduledCount += 1;
-      } else if (appointments.status === 'pending') {
-        acc.pendingCount += 1;
-      } else if (appointments.status === 'cancelled') {
-        acc.cancelledCount += 1;
-      }
+    const counts = (appointments.documents as Appointment[]).reduce(
+      (acc, appointments) => {
+        if (appointments.status === 'scheduled') {
+          acc.scheduledCount += 1
+        } else if (appointments.status === 'pending') {
+          acc.pendingCount += 1
+        } else if (appointments.status === 'cancelled') {
+          acc.cancelledCount += 1
+        }
 
-      return acc;
-    }, initialCounts)
+        return acc
+      },
+      initialCounts
+    )
 
     const data = {
       totalCount: appointments.total,
@@ -66,9 +76,33 @@ export const getRecentAppointmentsList = async () => {
       documents: appointments.documents
     }
 
-    return parseStringify(data);
-    
+    return parseStringify(data)
   } catch (error) {
     console.log(error)
+  }
+}
+
+export const updateAppointment = async ({
+  appointmentId,
+  appointment
+}: UpdateAppointmentParams) => {
+  try {
+    const updatedAppointment = await databases.updateDocument(
+      DATABASE_ID!,
+      APPOINTMENT_COLLECTION_ID!,
+      appointmentId || '',
+      appointment
+    )
+
+    if (!updatedAppointment) {
+      throw new Error('Appointment not found')
+    }
+
+    // TODO SMS Notification
+
+    revalidatePath('/admin')
+    return parseStringify(updatedAppointment)
+  } catch (error) {
+    console.log((error as { response: never })?.response)
   }
 }

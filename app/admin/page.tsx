@@ -4,14 +4,10 @@ import { columns } from '@/components/table/columns'
 import { getRecentAppointmentsList } from '@/lib/actions/appointment.actions'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Payment } from '@/components/table/columns'
-
 
 const Admin = async () => {
-
-
   const appointments = await getRecentAppointmentsList()
-
+  console.log('meus appointments', appointments)
   return (
     <div className='mx-auto flex max-w-7xl flex-col space-y-14'>
       <header className="admin-header">
